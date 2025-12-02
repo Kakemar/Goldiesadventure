@@ -1,0 +1,42 @@
+/* Minimal styles for Goldies Adventure */
+/*
+	Dette er en svært enkel og lettlest stilfil.
+	- Body sentrerer innholdet horisontalt.
+	- Nav og footer er fullbredde, men deres innhold er begrenset av max-width i main/section.
+	- Karusell bruker scroll-snap for enkel navigasjon på mobil/desktop.
+	- Mørk modus aktiveres ved å legge klassen `dark` på <html>.
+*/
+
+:root{--bg:#f3f4f6;--text:#222;--accent:#e17055}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+
+/* Hovedoppsett */
+body{font-family:system-ui,Arial,monospace;background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center}
+
+/* Nav og footer: fullbredde bakgrunn, sentrert innhold */
+nav,footer{width:100%;background:var(--accent);color:#fff}
+nav{padding:12px}
+nav a{color:#fff;margin:0 8px;text-decoration:none}
+footer{padding:8px;font-size:13px}
+
+/* Hovedinnhold (begrenset bredde for lesbarhet) */
+main,section{width:100%;max-width:1100px;margin:24px auto;padding:0 16px;display:flex;flex-direction:column;align-items:center}
+
+/* Bilder og tekst: alltid sentrert */
+img{max-width:100%;height:auto;display:block;margin:0 auto}
+h1,h2,h3,p,figcaption{margin:0.5rem 0;text-align:center}
+
+/* Karusell: minimal, basert på native scroll-snap */
+.carousel__viewport{width:100%;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.carousel__track{display:flex;gap:12px}
+.carousel__slide{flex:0 0 90%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center}
+.carousel__slide img{border-radius:6px}
+
+/* Fjern punktmerker fra lister globalt */
+ul{list-style:none;padding:0;margin:0}
+
+/* Mørk modus: legg 'dark' på <html> for å aktivere */
+html.dark{--bg:#0b0d0f;--text:#e6eef3;--accent:#c66}
+
+@media(min-width:900px){.carousel__slide{flex:0 0 45%}}
