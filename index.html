@@ -1,120 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Goldies adventure</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" /> <!-- Setter tegnsett til UTF-8 (støtter norske bokstaver) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"/> <!-- Gjør siden responsiv på mobil -->
+  <title>Goldies Adventure</title> <!-- Tittel som vises i nettleserfanen -->
+  <link rel="stylesheet" href="styles.css" /> <!-- Kobler til CSS-stilark -->
 </head>
 <body>
-  <!-- Hovedtittel -->
-  <h1>Goldies adventure</h1>
-  <!-- Navigasjonsmenyen: linker og handlingsknapper (start, tema) -->
-  <nav class="navigasjon">
+  <!--  Header: Toppseksjon med tittel og navigasjon -->
+  <header class="site-header">
+    <h1>Goldies Adventure</h1> <!-- Spilltittel -->
+    <nav class="nav">
+      <ul>
+        <!-- Navigasjonslenker som hopper til ulike seksjoner på siden -->
+        <li><a href="#hvordan">Hvordan spillet funker</a></li>
+        <li><a href="#canvas-wrapper">Spillet</a></li>
+        <li><a href="#karakterer">Karakterer</a></li>
+        <li><a href="#leveler">Leveler</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Seksjon: Hvordan spillet fungerer -->
+  <section id="hvordan">
+    <h2>Hvordan spillet funker</h2>
+    <p>
+      Sir Goldie er en av gullfolkets sterkeste krigere. Når den onde slimkongen angriper landsbyen,
+      kidnapper vennene hans og gjør dem om til mynter, må Goldie bekjempe ham for å bryte forbannelsen.
+    </p>
     <ul>
-      <li><a href="#about">Om spillet</a></li>
-      <li><a href="#Karakterer">Karakterer</a></li>
-      <li><a href="#Leveler">Leveler</a></li>
-      <li><a href="#Footer">Footer</a></li>
-  <li><button id="start-button">Start Spill</button></li>
-  <li><button id="theme-toggle">Mørk/Lys</button></li>
-
-
+      <!-- Punktliste som forklarer spillmekanikken -->
+      <li><strong>Kontroller:</strong> Bruk WASD eller piltastene for å bevege Goldie.</li>
+      <li><strong>Fiender:</strong> Ulike typer slim har forskjellige styrker og hastigheter. Lær å tilpasse strategien din.</li>
+      <li><strong>Liv og mynter:</strong> Goldie mister liv når han blir truffet, men samler mynter. Mister poeng fra nåværende nivå, men beholder tidligere.</li>
+      <li><strong>Nivåer:</strong> Vanskelighetsgraden øker for hvert nivå, med flere fiender og nye utfordringer.</li>
+      <li><strong>Målet:</strong> Beseire Slimkongen på siste nivå for å bryte forbannelsen og redde vennene.</li>
     </ul>
-  </nav>
-  <!-- Informasjon om spillet -->
-  <section id="about">
-    <h2>Om spillet</h2>
-    <p> Sir Goldie er en av gullfolkets sterkeste krigere, men når den onde slimkongen angriper landsbyen hans, kidnapper og gjør alle vennene hans om til mynter, så må han bekjempe han for å bryte forbannelsen. </p>
-  </section> 
- 
-  <!-- Seksjon: Karakterer - viser hovedkarakter og fiender -->
-  <section id="Karakterer">
-    <h2>Karakterer</h2>
-    <p>Goldies adventure har unike egendesignet karakterer som alle har ulikt design.</p>
-
-    <div class="karakterer">
-      <h3>Goldie</h3>
-      <img src=" Goldie.png" alt="Goldie karakteren">
-      <p>Goldie er hovedkarakteren i spillet. Han er berømt hos gullfolket for sin styrke og mot. Nå må han gi alt for å redde landsbyen hans.
-      </p>
-    </div>
-
-    <div class="karakterer">
-      <h3>Fiender</h3>
-      <img src=" Slime.png" alt="Fiende 1">
-      <p>De blå slimene er slimkongen sine vanlige soldater, dumme og treige, men de kan være farlige i store grupper.</p>
-    </div>
-
-    <div class="karakterer">
-      <h3>Fiende 2</h3>
-      <img src=" Fastslime.png" alt="Fiende 2">
-      <p>De rosa slimene er toppsoldatene i slimkongens hær, raske og store, de er kjent for sin styrke og brutalitet .</p>
-    </div>
-
-    <div class="karakterer">
-      <h3>Fiende 3</h3>
-      <img src=" Superfast.png" alt="Fiende 3">
-      <p>De gule slimene er de raskeste av alle slimene, små men eksremt farlige. De angriper i flokk og overasker sine fiender</p>
-    </div>
-
-    <div class="karakterer">
-      <h3>The final boss</h3>
-      <img src=" Kingslime.png" alt="The final boss">
-      <p>Slimkongen var orginalt en vanlig blå slim, men etter å ha kommet i kontakt med den magiske kronen, ble han enorm, smart, og fikk kraften til å styre alle andre slimer.</p>
-    </div>
   </section>
 
+  <main>
+    <!--  Spillcanvas: Her tegnes selve spillet -->
+    <section id="canvas-wrapper">
+      <canvas id="gameCanvas" width="1000" height="900" aria-label="Goldies Adventure Canvas"></canvas>
+      <!-- Canvas-elementet brukes av JavaScript til å tegne spillet -->
+    </section>
 
-  <!-- Seksjon: Leveler - karusell med level-bilder -->
-  <section id="Leveler">
-    <h2>Leveler</h2>
-    <p>Spillet består av flere ulike leveler med ulike vanskelighetsgrader og ulike fiender.</p>
+    <!--  Karakterseksjon: Viser hovedkarakter og fiender -->
+    <section id="karakterer">
+      <h2>Karakterer</h2>
 
-    <div class="carousel">
-      <button class="carousel__btn carousel__btn--prev" aria-label="Forrige"></button>
-      <div class="carousel__viewport">
-        <div class="carousel__track">
-          <div class="carousel__slide">
-            <img src=" Level  1.png" alt="Level 1 bilde">
-            <div class="carousel__caption">Level 1 - En enkel level</div>
-          </div>
-          <div class="carousel__slide">
-            <img src=" Level 2.png" alt="Level 2 bilde">
-            <div class="carousel__caption">Level 2 - Litt vanskeligere</div>
-          </div>
-          <div class="carousel__slide">
-            <img src=" Level 3.png" alt="Level 3 bilde">
-            <div class="carousel__caption">Level 3 - Flere hindringer</div>
-          </div>
-          <div class="carousel__slide">
-            <img src=" Level 4.png" alt="Level 4 bilde">
-            <div class="carousel__caption">Level 4 - Utfordrende</div>
-          </div>
-          <div class="carousel__slide">
-            <img src=" Level 5.png" alt="Boss level bilde">
-            <div class="carousel__caption">Level 5 - Boss fight</div>
-          </div>
-          <div class="carousel__slide">
-            <img src=" Level 6.png" alt="Level 6 bilde">
-            <div class="carousel__caption">Level 6 - Etter boss</div>
-          </div>
-        </div>
+      <!-- Hver karakter presenteres i en "card"-boks -->
+      <div class="card">
+        <h3>Goldie</h3>
+        <img src="bilder/Goldie.png" alt="Goldie karakteren">
+        <p>Hovedkarakteren modig, sterk og klar til å redde landsbyen.</p>
       </div>
-      <button class="carousel__btn carousel__btn--next" aria-label="Neste"></button>
-    </div>
 
-  </section>
+      <div class="card">
+        <h3>Fiende: Blå slim</h3>
+        <img src="bilder/Slime.png" alt="Fiende blå slim">
+        <p>Vanlige soldater treige, men farlige i grupper.</p>
+      </div>
 
-  <!-- Footer: opphavsrett og kontaktinfo -->
-  <footer>
+      <div class="card">
+        <h3>Fiende: Rosa slim</h3>
+        <img src="bilder/Fastslime.png" alt="Fiende rosa slim">
+        <p>Topp-soldater raske og brutale.</p>
+      </div>
+
+      <div class="card">
+        <h3>Fiende: Gul slim</h3>
+        <img src="bilder/Superfast.png" alt="Fiende gul slim">
+        <p>Små, ekstremt raske, angriper i flokk.</p>
+      </div>
+
+      <div class="card">
+        <h3>Slimkongen (Boss)</h3>
+        <img src="bilder/Kingslime.png" alt="Slimkongen">
+        <p>Fikk makt fra en magisk krone. Smart og styrer alle slimer.</p>
+      </div>
+    </section>
+
+    <!-- Levelseksjon: Viser spillnivåer -->
+    <section id="leveler">
+      <h2>Leveler</h2>
+      <p>Flere nivåer med økende vanskelighetsgrad, fiender og utfordringer.</p>
+      <div class="grid-levels">
+        <!-- Hvert nivå vises med bilde og bildetekst -->
+        <figure>
+          <img src="bilder/Level 1.png" alt="Level 1" />
+          <figcaption>Level 1</figcaption>
+        </figure>
+        <figure>
+          <img src="bilder/Level 2.png" alt="Level 2" />
+          <figcaption>Level 2</figcaption>
+        </figure>
+        <figure>
+          <img src="bilder/Level 3.png" alt="Level 3" />
+          <figcaption>Level 3</figcaption>
+        </figure>
+        <figure>
+          <img src="bilder/Level 4.png" alt="Level 4" />
+          <figcaption>Level 4</figcaption>
+        </figure>
+        <figure>
+          <img src="bilder/Level 5.png" alt="Level 5" />
+          <figcaption>Level 5</figcaption>
+        </figure>
+        <figure>
+          <img src="bilder/Level 6.png" alt="Level 6" />
+          <figcaption>Level 6</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer-->
+  <footer class="site-footer">
     <p>Copyright © 2025 Goldies Adventure. Alle rettigheter reservert.</p>
     <p>Utviklet av Marius, Christian og Christian.</p>
-    <p>Kontakt oss på <a href="mailto:kontakt@goldiesadventure.com">kontakt@goldiesadventure.com</a>.</p>
+    <p>Kontakt: <a href="mailto:kontakt@goldiesadventure.com">kontakt@goldiesadventure.com</a></p>
   </footer>
 
-  <!-- JavaScript: håndterer startknapp, karusell og tema -->
-  <script src="app.js"></script>
-
+  <!--  JavaScript: Kobler til spillmotoren -->
+  <script src="game.js"></script>
 </body>
 </html>
+
