@@ -1,42 +1,173 @@
-/* Minimal styles for Goldies Adventure */
-/*
-	Dette er en svært enkel og lettlest stilfil.
-	- Body sentrerer innholdet horisontalt.
-	- Nav og footer er fullbredde, men deres innhold er begrenset av max-width i main/section.
-	- Karusell bruker scroll-snap for enkel navigasjon på mobil/desktop.
-	- Mørk modus aktiveres ved å legge klassen `dark` på <html>.
+
+:root {
+  --bg: #87CEEB;        /* Standard bakgrunnsfarge (himmelblå, gir spillfølelse) */
+  --text: #1c1c3c;      /* Tekstfarge (mørk blå/grå, god kontrast mot lys bakgrunn) */
+  --accent: #FFD700;    /* Gullfarge brukt til rammer, overskrifter og viktige elementer */
+  --card-bg: #3b2f2f;   /* Bakgrunn for kort og bokser (jordfarget, gir kontrast) */
+  --button-bg: #228B22; /* Grønn knapp (gressfarge, passer til eventyrtema) */
+  --button-text: #ffffff; /* Hvit tekst på knapper for kontrast */
+
+  /* Felles stilverdier som brukes flere steder */
+  --radius: 12px;       /* Standard avrunding på hjørner */
+  --shadow: 0 6px 16px rgba(0,0,0,0.4); /* Standard skygge for dybde */
+}
+
+/*  Reset og basis
+   Setter grunnleggende stil for hele dokumentet.
+   box-sizing: border-box gjør at padding og border regnes med i elementets bredde/høyde.
 */
+* { box-sizing: border-box; }
 
-:root{--bg:#f3f4f6;--text:#222;--accent:#e17055}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
+body {
+  margin: 0;                          /* Fjern standard margin */
+  background: var(--bg);              /* Bruk bakgrunnsfargen fra variabel */
+  color: var(--text);                 /* Bruk tekstfargen fra variabel */
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif; /* Moderne, lettlest font */
+  line-height: 1.6;                   /* Litt ekstra linjeavstand for lesbarhet */
+  text-align: center;                 /* Midtstill tekst som standard */
+}
 
-/* Hovedoppsett */
-body{font-family:system-ui,Arial,monospace;background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center}
+/*  Header og navigasjon
+   Øverst på siden, med tittel og meny.
+*/
+.site-header {
+  padding: 16px 24px;                 /* Luft rundt innholdet */
+  border-bottom: 2px solid var(--card-bg); /* Skillelinje under header */
+  background: var(--accent);          /* Gullfarget bakgrunn */
+  box-shadow: var(--shadow);          /* Skygge under header */
+}
+.site-header h1 {
+  margin: 0;                          /* Fjern standard margin */
+  color: var(--text);                 /* Tekstfarge (mørk blå/grå) */
+  font-size: 32px;                    /* Stor tittel */
+  letter-spacing: 1px;                /* Litt ekstra luft mellom bokstaver */
+}
+.nav ul {
+  display: flex;                      /* Bruk flexbox for å plassere menyen */
+  justify-content: center;            /* Midtstill menyen */
+  gap: 12px;                          /* Avstand mellom lenker */
+  flex-wrap: wrap;                    /* Bryt linje hvis skjermen er smal */
+  list-style: none;                   /* Fjern punktliste */
+  padding: 0;
+  margin: 0;
+}
+.nav a {
+  color: var(--text);                 /* Lenketekst i mørk blå/grå */
+  text-decoration: none;              /* Fjern understrek */
+  padding: 8px 10px;                  /* Litt luft rundt lenketeksten */
+  border-radius: 6px;                 /* Runde hjørner */
+}
+.nav a:hover {
+  background: rgba(255,255,255,0.3);  /* Lys bakgrunn ved hover */
+}
 
-/* Nav og footer: fullbredde bakgrunn, sentrert innhold */
-nav,footer{width:100%;background:var(--accent);color:#fff}
-nav{padding:12px}
-nav a{color:#fff;margin:0 8px;text-decoration:none}
-footer{padding:8px;font-size:13px}
+/*  Knapper
+   Brukes til "Start Spill" og andre interaktive elementer.
+*/
+.button {
+  background: var(--button-bg);       /* Grønn bakgrunn */
+  color: var(--button-text);          /* Hvit tekst */
+  border: 2px solid #145214;          /* Mørkere grønn kant */
+  border-radius: var(--radius);       /* Runde hjørner */
+  padding: 10px 16px;                 /* Luft inni knappen */
+  cursor: pointer;                    /* Endre musepeker til hånd */
+  font-weight: bold;                  /* Fet tekst */
+  box-shadow: var(--shadow);          /* Skygge under knappen */
+}
+.button:hover {
+  background: #32CD32;                /* Lysere grønn ved hover */
+  transform: scale(1.05);             /* Liten zoom-effekt */
+}
 
-/* Hovedinnhold (begrenset bredde for lesbarhet) */
-main,section{width:100%;max-width:1100px;margin:24px auto;padding:0 16px;display:flex;flex-direction:column;align-items:center}
+/* Seksjoner
+   Generell stil for hovedinnholdet.
+*/
+main {
+  max-width: 1100px;                  /* Begrens bredde */
+  margin: 0 auto;                     /* Midtstill */
+  padding: 24px;                      /* Luft rundt innholdet */
+}
+section h2 {
+  margin-top: 24px;                   /* Luft over overskrifter */
+  color: var(--accent);               /* Gullfarge på overskrifter */
+  font-family: 'Trebuchet MS', sans-serif; /* Litt eventyraktig font */
+}
 
-/* Bilder og tekst: alltid sentrert */
-img{max-width:100%;height:auto;display:block;margin:0 auto}
-h1,h2,h3,p,figcaption{margin:0.5rem 0;text-align:center}
+/*  Canvas
+   Spillvinduet der selve spillet tegnes.
+*/
+#canvas-wrapper {
+  display: flex;                      /* Bruk flexbox */
+  justify-content: center;            /* Midtstill canvas */
+  margin: 20px 0;                     /* Luft over og under */
+}
+canvas {
+  background: #000;                   /* Svart bakgrunn gir retro følelse */
+  image-rendering: pixelated;         /* Pikselert grafikk */
+  border: 4px solid var(--accent);    /* Gullramme */
+  border-radius: var(--radius);       /* Runde hjørner */
+  box-shadow: var(--shadow);          /* Skygge for dybde */
+}
 
-/* Karusell: minimal, basert på native scroll-snap */
-.carousel__viewport{width:100%;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.carousel__track{display:flex;gap:12px}
-.carousel__slide{flex:0 0 90%;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center}
-.carousel__slide img{border-radius:6px}
+/*  Kort og level-bokser
+   Brukes til karakterkort, level-bokser og "hvordan"-seksjonen.
+   Samme stil for konsistens.
+*/
+.card, .grid-levels figure, #hvordan {
+  background: var(--card-bg);         /* Mørk bakgrunn */
+  border: 2px solid var(--accent);    /* Gullkant */
+  border-radius: var(--radius);       /* Runde hjørner */
+  color: #f5f5f5;                     /* Lys tekst for kontrast */
+  box-shadow: var(--shadow);          /* Skygge */
+  margin: 20px auto;                  /* Luft rundt */
+  padding: 16px;                      /* Luft inni */
+}
+.card {
+  display: grid;                      /* Bruk grid for bilde + tekst */
+  grid-template-columns: 120px 1fr;   /* Første kolonne bilde, andre tekst */
+  gap: 16px;                          /* Avstand mellom bilde og tekst */
+  max-width: 300px;                   /* Smalere kort */
+  align-items: center;                /* Midtstill innhold vertikalt */
+}
+.card img, .grid-levels img {
+  width: 100%;                        /* Bildet fyller boksen */
+  border-radius: 8px;                 /* Runde hjørner */
+  border: 2px solid var(--accent);    /* Gullkant rundt bilde */
+  background: #222;                   /* Mørk bakgrunn bak bildet */
+}
+.card img { width: 120px; }           /* Spesifikk bredde for karakterbilder */
+.card:hover, .grid-levels figure:hover, #hvordan li:hover {
+  transform: translateY(-5px);        /* Løft boksen litt opp ved hover */
+  box-shadow: var(--shadow);          /* Skygge ved hover */
+}
 
-/* Fjern punktmerker fra lister globalt */
-ul{list-style:none;padding:0;margin:0}
+/*  Level‑grid
+   Grid-layout for level-bildene.
+*/
+.grid-levels {
+  display: grid;                      /* Bruk grid */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Responsiv layout */
+  gap: 16px;                          /* Avstand mellom level-bokser */
+  justify-items: center;              /* Midtstill hver boks */
+}
+.grid-levels figcaption {
+  margin-top: 8px;                    /* Luft over bildetekst */
+  color: var(--accent);               /* Gullfarge på bildetekst */
+  font-weight: bold;                  /* Fet skrift */
+}
 
-/* Mørk modus: legg 'dark' på <html> for å aktivere */
-html.dark{--bg:#0b0d0f;--text:#e6eef3;--accent:#c66}
+/* Hvordan-seksjonen */
+#hvordan {
+  max-width: 800px;                   /* Begrens bredde */
+  text-align: left;                   /* Venstrejustert tekst */
+}
+#hvordan h2 { text-align: center; }   /* Midtstill overskriften */
+#hvordan ul {
+  list-style: none;                   /* Fjern punkter */
+  padding: 0;
+}
+#hvordan li {
+  margin-bottom: 12px;                /* Avstand mellom punkter */
+  padding: 10px;                      /* Luft inni hvert punkt */
+}
 
-@media(min-width:900px){.carousel__slide{flex:0 0 45%}}
