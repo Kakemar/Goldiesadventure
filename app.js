@@ -2,7 +2,7 @@
 
 const SCREEN_WIDTH = 1000; // Bredde på spill-viewport
 const SCREEN_HEIGHT = 1000; // Høyde på spill-viewport
-const TILE_SIZE = 50; // Størrelse på hver tile (rute)
+const TILE_SIZE = 50; // Størrelse på hver block 
 
 // Hent canvas og 2D-kontekst fra DOM
 const canvas = document.getElementById("gameCanvas");
@@ -13,8 +13,8 @@ const startBtn = document.getElementById("startBtn");
 const themeToggle = document.getElementById("themeToggle");
 
 // Spilltilstand-variabler
-let state = "menu"; // Kan være: "menu", "loading", "playing", "gameover", "win"
-let gameOver = false; // Om spilleren er død / tapt
+let state = "menu"; // Kan være meny spiller, vunnet osv
+let gameOver = false; // Om spilleren har tapt
 let score = 0; // Poeng i nåværende nivå
 let totalScore = 0; // Akkumulert poengsum over nivåene
 let currentLevel = 0; // Indeks på aktivt nivå
@@ -34,20 +34,20 @@ const keys = Object.create(null);
 
 // Forhåndslastede bilder/sprites i et objekt for enkel tilgang
 const images = {
-  bg: loadImage('8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg'),
-  player: loadImage('Goldie.png'),
-  slime: loadImage('Slime.png'),
-  fast: loadImage('Fastslime.png'),
-  yellow: loadImage('Superfast.png'),
-  king: loadImage('Kingslime.png'),
-  lava: loadImage('lava.png'),
-  goldblock: loadImage('Goldblock.png'),
-  coin: loadImage('Coin.png'),
-  portal: loadImage('Portal.png'),
-  chest: loadImage('Chest.png'),
-  dirt: loadImage('DirtBlock2D.png'),
-  grass: loadImage('GrassBlock2D.png'),
-  stone: loadImage('Sigmastone.png'),
+  bg: loadImage('bilder/8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg'),
+  player: loadImage('bilder/Goldie.png'),
+  slime: loadImage('bilder/Slime.png'),
+  fast: loadImage('bilder/Fastslime.png'),
+  yellow: loadImage('bilder/Superfast.png'),
+  king: loadImage('bilder/Kingslime.png'),
+  lava: loadImage('bilder/lava.png'),
+  goldblock: loadImage('bilder/Goldblock.png'),
+  coin: loadImage('bilder/Coin.png'),
+  portal: loadImage('bilder/Portal.png'),
+  chest: loadImage('bilder/Chest.png'),
+  dirt: loadImage('bilder/DirtBlock2D.png'),
+  grass: loadImage('bilder/GrassBlock2D.png'),
+  stone: loadImage('bilder/Sigmastone.png'),
 };
 
 // Hjelpefunksjon for å laste bilder. Returnerer et Image-objekt.
@@ -57,26 +57,44 @@ function loadImage(src) {
   return img; // Returner objektet umiddelbart (kan være ikke ferdig lastet)
 }
 
-// Enkel AABB-kollisjonskontroll mellom to rektangler
+// Viser om spiller treffen en block eller fiendene 
 function rectsCollide(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
-// Tegn et bilde dersom det er lastet, ellers tegn en placeholder-rect
+// Funksjon for å tegne et bilde på canvas.
+// Hvis bildet ikke er ferdig lastet, tegnes en placeholder-firkant i stedet.
 function drawImage(img, x, y, w, h) {
-  if (!img.complete) {
-    // Hvis bildet ennå ikke er ferdig lastet tegner vi en mørk firkant som reserve
-    ctx.fillStyle = "#333";
-    ctx.fillRect(x, y, w, h);
-  } else {
-    // Ellers tegn bildet
+  
+  // Sjekk om bildet er ferdig lastet inn i minnet
+  if (img.complete) {
+    // Hvis ja: tegn selve bildet på canvas ved posisjon (x,y) med bredde w og høyde h
     ctx.drawImage(img, x, y, w, h);
+  } else {
+    // Hvis nei: bruk en mørk grå farge som "reserve"
+    ctx.fillStyle = "#333";
+    // Tegn en rektangel på samme posisjon og størrelse som bildet ville hatt
+    ctx.fillRect(x, y, w, h);
   }
 }
 
-// Hjelpefunksjoner som brukes flere steder
-function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// clamp: sørger for at en verdi v alltid ligger mellom min og max
+function clamp(v, min, max) {
+  // Math.min(max, v) gir den minste av v og max (aldri over max)
+  // Math.max(min, ...) sørger for at resultatet aldri går under min
+  return Math.max(min, Math.min(max, v));
+}
+
+// randInt: returnerer et tilfeldig heltall mellom min og max (inkludert begge)
+function randInt(min, max) {
+  // Math.random() gir et tall mellom 0 og 1
+  // Multipliser med (max - min + 1) for å få riktig intervallstørrelse
+  // Math.floor(...) runder ned til nærmeste heltall
+  // + min flytter intervallet opp slik at det starter på min
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 
 // ---------------- Classes ---------------- //
 // Player-klassen håndterer spillerens posisjon, fysikk, input og tegning
@@ -113,52 +131,82 @@ class Player {
     this.velY = Math.min(this.velY, 10); // Begrens maksfart nedover
     dy += this.velY; // Legg til i vertikalforskyvningen
 
-    // Kollisjoner med verden (tile-vegger/platforms)
-    this.inAir = true; // Anta vi er i luften til vi finner ut noe annet
-    for (const [img, tileRect] of world.tileList) {
-      // Sjekk horisontal kollisjon først — om vi skulle flytte i x-retning
-      if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, tileRect)) dx = 0;
+ // Påfør tyngdekraft
+this.velY = Math.min(this.velY + 1, 10); // øk og begrens vertikal hastighet
+dy += this.velY; // legg til i forskyvning
 
-      // Sjekk vertikal kollisjon — om vi skulle flytte i y-retning
-      if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, tileRect)) {
-        if (this.velY < 0) {
-          // Hvis vi beveger oss oppover og treffer et tak, stopp opp og sett dy slik at vi ikke går gjennom
-          dy = tileRect.y + tileRect.h - this.y;
-          this.velY = 0;
-        } else {
-          // Hvis vi faller og treffer en plattform eller bakken
-          dy = tileRect.y - (this.y + this.h); // Sett dy slik at vi står på toppen av tile
-          this.velY = 0; // Nullstill vertikal hastighet
-          this.inAir = false; // Spilleren står nå på en flate
-        }
-      }
-    }
+// Anta at spilleren er i luften til vi finner en plattform
+this.inAir = true;
 
-    // Kollisjon med 'final tiles' (spesielle gjenstander som kan aktiveres senere)
-    for (const finalTile of finalTileGroup) {
-      if (!finalTile.visible) continue; // Ignorer om de ikke er synlige ennå
-      const fRect = finalTile.rect;
-      if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, fRect)) dx = 0;
-      if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, fRect)) {
-        if (this.velY < 0) {
-          dy = fRect.y + fRect.h - this.y; this.velY = 0;
-        } else {
-          dy = fRect.y - (this.y + this.h); this.velY = 0; this.inAir = false;
-        }
-      }
-    }
-
-    // Anvend beregnede forskyvninger
-    this.x += dx;
-    this.y += dy;
-
-    // Begrens spillerens posisjon til et rimelig område (for å unngå at spilleren forsvinner helt ut)
-    this.x = clamp(this.x, -1000, 5000);
-    this.y = clamp(this.y, -1000, SCREEN_HEIGHT - this.h);
+for (const [, tileRect] of world.tileList) {
+  // Horisontal kollisjon
+  if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, tileRect)) {
+    dx = 0;
   }
 
-  // Tegner spilleren med sprite
-  draw() { drawImage(images.player, this.x, this.y, this.w, this.h); }
+  // Vertikal kollisjon
+  if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, tileRect)) {
+    if (this.velY < 0) {
+      // Oppover: stopp ved tak
+      dy = tileRect.y + tileRect.h - this.y;
+    } else {
+      // Nedover: stå på toppen av tile
+      dy = tileRect.y - (this.y + this.h);
+      this.inAir = false;
+    }
+    this.velY = 0; // nullstill vertikal hastighet uansett
+  }
+}
+
+
+   // Kollisjon med 'final tiles' (spesielle gjenstander som kan aktiveres senere)
+for (const finalTile of finalTileGroup) {
+  if (!finalTile.visible) continue; // hopp over hvis tile ikke er synlig ennå
+
+  const fRect = finalTile.rect; // hent rektangelet til tile
+
+  // Horisontal kollisjon: hvis vi prøver å flytte oss inn i tile i x-retning
+  if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, fRect)) {
+    dx = 0; // stopp horisontal bevegelse
+  }
+
+  // Vertikal kollisjon: hvis vi prøver å flytte oss inn i tile i y-retning
+  if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, fRect)) {
+    if (this.velY < 0) {
+      // Oppover: stopp ved tak
+      dy = fRect.y + fRect.h - this.y;
+    } else {
+      // Nedover: stå på toppen av tile
+      dy = fRect.y - (this.y + this.h);
+      this.inAir = false; // vi står nå på bakken
+    }
+    this.velY = 0; // nullstill vertikal hastighet uansett
+  }
+}
+
+
+  // Anvend beregnede forskyvninger (dx, dy) på spillerens posisjon
+this.x += dx; // legg til horisontal forskyvning (flytt til venstre/høyre)
+this.y += dy; // legg til vertikal forskyvning (flytt opp/ned basert på hopp/tyngdekraft)
+
+
+// Begrens spillerens posisjon til et rimelig område
+// clamp sørger for at verdiene aldri går utenfor gitt min/max
+this.x = clamp(this.x, -1000, 5000); 
+// Spilleren kan ikke gå lenger til venstre enn -1000 eller høyere enn 5000 i x-retning
+
+this.y = clamp(this.y, -1000, SCREEN_HEIGHT - this.h); 
+// Spilleren kan ikke falle lenger ned enn skjermhøyden minus egen høyde,
+// og ikke flytte seg høyere opp enn -1000 (gir litt buffer over toppen)
+}
+
+// Tegner spilleren med sprite
+draw() {
+  // Bruker drawImage til å tegne spillerens sprite på canvas
+  // med posisjon (x,y) og størrelse (w,h)
+  drawImage(images.player, this.x, this.y, this.w, this.h);
+}
+
 }
 
 // Enkel fiende som patruljerer frem og tilbake
@@ -323,13 +371,13 @@ class KingEnemy {
   // Ta skade — reduser helse og sett flashTimer
   takeDamage() {
     this.health -= 1; this.flashTimer = 20;
-    if (this.health <= 0) this.alive = false; // Dø hvis helse <= 0
+    if (this.health <= 0) this.alive = false; // Dø hvis helse = 0
   }
 
   // Oppdater visuell flash-effekt for skadet sinnstilstand/enrage-blink
   updateFlash() {
     if (this.flashTimer > 0) {
-      this.flashTimer -= 1;
+      this.flashTimer -= 1; 
       this.tintColor = { r: 255, g: 0, b: 0 }; // Rød tint når skadet
     } else {
       this.tintColor = null;
@@ -716,4 +764,3 @@ function loop() {
   requestAnimationFrame(loop); // Holder spillet i gang med ~60 FPS
 }
 
-// End of file
