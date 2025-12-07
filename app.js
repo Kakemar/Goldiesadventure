@@ -126,33 +126,29 @@ class Player {
     if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4; // Gå/skyv venstre
     if (keys["ArrowRight"] || keys["KeyD"]) dx += 4; // Gå/skyv høyre
 
-  // ---------------- Gravity og kollisjon ----------------
-const GRAVITY = 0.25;    // Tyngdekraft per frame
-const MAX_FALL = 2.5;    // Maksimal fallhastighet
-const JUMP_SPEED = 10;   // Start-hastighet ved hopp
+// Gravity
+this.velY += 0.25;
+if (this.velY > 3) this.velY = 3;
+this.y += this.velY;
 
-// Hopp
-if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-    this.velY = -JUMP_SPEED;
-    this.jumped = true;
+// Antar vi er i luften
+this.inAir = true;
+
+// Sjekk vertikal kollisjon
+for (const [, tileRect] of world.tileList) {
+  if (rectsCollide(this.rect, tileRect)) {
+    if (this.velY > 0) {
+      // Land på toppen
+      this.y = tileRect.y - this.h;
+      this.velY = 0;
+      this.inAir = false;
+    } else if (this.velY < 0) {
+      // Stopp ved tak
+      this.y = tileRect.y + tileRect.h;
+      this.velY = 0;
+    }
+  }
 }
-
-// Reset jumped når hopp-taster slippes
-if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
-
-// ---------------- Gravity og kollisjon ----------------
-const GRAVITY = 0.25;    // Tyngdekraft per frame
-const MAX_FALL = 2.5;    // Maksimal fallhastighet
-const JUMP_SPEED = 10;   // Start-hastighet ved hopp
-
-// Hopp
-if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-    this.velY = -JUMP_SPEED;
-    this.jumped = true;
-}
-
-// Reset jumped når hopp-taster slippes
-if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
 
 
    // Kollisjon med 'final tiles' (spesielle gjenstander som kan aktiveres senere)
