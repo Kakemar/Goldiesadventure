@@ -154,34 +154,6 @@ if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.
 // Reset jumped når hopp-taster slippes
 if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
 
-// Gravity
-this.velY += GRAVITY;
-if (this.velY > MAX_FALL) this.velY = MAX_FALL;
-
-// Flytt horisontalt først
-this.x += dx;
-
-// Vertikal bevegelse og kollisjon
-this.inAir = true; // Anta vi er i luften før sjekk
-this.y += this.velY;
-
-for (const [, tileRect] of world.tileList) {
-    // Horisontal kollisjon allerede håndtert
-    // Vertikal kollisjon
-    if (rectsCollide(this.rect, tileRect)) {
-        if (this.velY > 0) {
-            // Faller ned: stå på toppen av tile
-            this.y = tileRect.y - this.h;
-            this.velY = 0;
-            this.inAir = false;
-        } else if (this.velY < 0) {
-            // Hopp opp: stopp ved tak
-            this.y = tileRect.y + tileRect.h;
-            this.velY = 0;
-        }
-    }
-}
-
 
    // Kollisjon med 'final tiles' (spesielle gjenstander som kan aktiveres senere)
 for (const finalTile of finalTileGroup) {
