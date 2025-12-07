@@ -128,7 +128,7 @@ class Player {
 
     // Gravity — påfør tyngdekraft
     this.velY += 0.25; // Øk vertikal hastighet
-    this.velY = Math.min(this.velY, 10); // Begrens maksfart nedover
+    this.velY = Math.min(this.velY, 3); // Begrens maksfart nedover
     dy += this.velY; // Legg til i vertikalforskyvningen
 
 
