@@ -115,18 +115,16 @@ update() {
   // Horisontal bevegelse
   if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4;
   if (keys["ArrowRight"] || keys["KeyD"]) dx += 4;
-
-  // Hopp
-  if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-    this.velY = -10;  // Lavere hopp
+// Hopp
+if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
+    this.velY = -8;  // Lavere hopp
     this.jumped = true;
-  }
-  if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
+}
 
-  // Gravity
-  this.velY += 0.5;                // Tyngdekraft
-  this.velY = Math.min(this.velY, 6); // Maks fallhastighet
-  dy += this.velY;
+// Gravity
+this.velY += 0.8;              // Litt sterkere tyngdekraft
+this.velY = Math.min(this.velY, 8); // Maks fallhastighet
+
 
   this.inAir = true; // Antar vi er i luften
 
