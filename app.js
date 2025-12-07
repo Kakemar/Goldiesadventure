@@ -12,6 +12,11 @@ const ctx = canvas.getContext("2d");
 const startBtn = document.getElementById("startBtn");
 const themeToggle = document.getElementById("themeToggle");
 
+const GRAVITY = 1;       // tyngdekraft (som i Python: self.vel_y += 1)
+const MAX_FALL_SPEED = 10; // maks fallhastighet
+const JUMP_FORCE = -15;  // hoppstyrke
+
+
 // Spilltilstand-variabler
 let state = "menu"; // Kan være meny spiller, vunnet osv
 let gameOver = false; // Om spilleren har tapt
@@ -34,20 +39,20 @@ const keys = Object.create(null);
 
 // Forhåndslastede bilder/sprites i et objekt for enkel tilgang
 const images = {
-  bg: loadImage('8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg'),
-  player: loadImage('Goldie.png'),
-  slime: loadImage('Slime.png'),
-  fast: loadImage('Fastslime.png'),
-  yellow: loadImage('Superfast.png'),
-  king: loadImage('Kingslime.png'),
-  lava: loadImage('lava.png'),
-  goldblock: loadImage('Goldblock.png'),
-  coin: loadImage('Coin.png'),
-  portal: loadImage('Portal.png'),
-  chest: loadImage('Chest.png'),
-  dirt: loadImage('DirtBlock2D.png'),
-  grass: loadImage('GrassBlock2D.png'),
-  stone: loadImage('Sigmastone.png'),
+  bg: loadImage("bilder/8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg"),
+  player: loadImage("bilder/Goldie.png"),
+  slime: loadImage("bilder/Slime.png"),
+  fast: loadImage("bilder/Fastslime.png"),
+  yellow: loadImage("bilder/Superfast.png"),
+  king: loadImage("bilder/Kingslime.png"),
+  lava: loadImage("bilder/lava.png"),
+  goldblock: loadImage("bilder/Goldblock.png"),
+  coin: loadImage("bilder/Coin.png"),
+  portal: loadImage("bilder/Portal.png"),
+  chest: loadImage("bilder/Chest.png"),
+  dirt: loadImage("bilder/DirtBlock2D.png"),
+  grass: loadImage("bilder/GrassBlock2D.png"),
+  stone: loadImage("bilder/Sigmastone.png"),
 };
 
 // Hjelpefunksjon for å laste bilder. Returnerer et Image-objekt.
@@ -112,46 +117,39 @@ class Player {
 update() {
   let dx = 0, dy = 0;
 
-  // Horisontal bevegelse
+  // Input
+  if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
+    this.velY = JUMP_FORCE;
+    this.jumped = true;
+  }
+  if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) {
+    this.jumped = false;
+  }
   if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4;
   if (keys["ArrowRight"] || keys["KeyD"]) dx += 4;
-// Hopp
-if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-    this.velY = -7.5;  // Moderat hopp
-    this.jumped = true;
-}
 
-// Gravity
-const gravity = 0.9;   // Litt sterkere enn før
-const maxFall = 9;      // Maks fallhastighet
-this.velY += gravity;
-this.velY = Math.min(this.velY, maxFall); 
+  // Gravity
+  this.velY = Math.min(this.velY + GRAVITY, MAX_FALL_SPEED);
+  dy += this.velY;
 
+  this.inAir = true;
 
-
-  this.inAir = true; // Antar vi er i luften
-
-  // Kollisjon med alle tiles i verden
+  // Kollisjon med tiles
   for (const [, tileRect] of world.tileList) {
-    // Horisontal kollisjon
     if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, tileRect)) dx = 0;
-
-    // Vertikal kollisjon
     if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, tileRect)) {
-      if (this.velY > 0) {
-        // Land på toppen av tile
+      if (this.velY < 0) {
+        dy = tileRect.y + tileRect.h - this.y;
+        this.velY = 0;
+      } else {
         dy = tileRect.y - (this.y + this.h);
         this.velY = 0;
         this.inAir = false;
-      } else if (this.velY < 0) {
-        // Stopp ved tak
-        dy = tileRect.y + tileRect.h - this.y;
-        this.velY = 0;
       }
     }
   }
 
-  // Anvend forskyvninger
+  // Apply movement
   this.x += dx;
   this.y += dy;
 
@@ -159,6 +157,7 @@ this.velY = Math.min(this.velY, maxFall);
   this.x = clamp(this.x, -1000, 5000);
   this.y = clamp(this.y, -1000, SCREEN_HEIGHT - this.h);
 }
+
 
 // Tegner spilleren med sprite
 draw() {
@@ -723,4 +722,3 @@ function loop() {
   // Be nettleseren kjøre loop() igjen ved neste skjermoppdatering
   requestAnimationFrame(loop); // Holder spillet i gang med ~60 FPS
 }
-
