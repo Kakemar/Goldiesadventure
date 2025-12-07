@@ -117,13 +117,16 @@ update() {
   if (keys["ArrowRight"] || keys["KeyD"]) dx += 4;
 // Hopp
 if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-    this.velY = -8;  // Lavere hopp
+    this.velY = -7.5;  // Moderat hopp
     this.jumped = true;
 }
 
 // Gravity
-this.velY += 0.8;              // Litt sterkere tyngdekraft
-this.velY = Math.min(this.velY, 8); // Maks fallhastighet
+const gravity = 0.9;   // Litt sterkere enn før
+const maxFall = 9;      // Maks fallhastighet
+this.velY += gravity;
+this.velY = Math.min(this.velY, maxFall); 
+
 
 
   this.inAir = true; // Antar vi er i luften
