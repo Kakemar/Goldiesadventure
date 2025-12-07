@@ -126,33 +126,60 @@ class Player {
     if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4; // Gå/skyv venstre
     if (keys["ArrowRight"] || keys["KeyD"]) dx += 4; // Gå/skyv høyre
 
-    // Gravity — påfør tyngdekraft
-    this.velY += 0.25; // Øk vertikal hastighet
-    this.velY = Math.min(this.velY, 3); // Begrens maksfart nedover
-    dy += this.velY; // Legg til i vertikalforskyvningen
+  // ---------------- Gravity og kollisjon ----------------
+const GRAVITY = 0.25;    // Tyngdekraft per frame
+const MAX_FALL = 2.5;    // Maksimal fallhastighet
+const JUMP_SPEED = 10;   // Start-hastighet ved hopp
 
+// Hopp
+if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
+    this.velY = -JUMP_SPEED;
+    this.jumped = true;
+}
 
-// Anta at spilleren er i luften til vi finner en plattform
-this.inAir = true;
+// Reset jumped når hopp-taster slippes
+if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
+
+// ---------------- Gravity og kollisjon ----------------
+const GRAVITY = 0.25;    // Tyngdekraft per frame
+const MAX_FALL = 2.5;    // Maksimal fallhastighet
+const JUMP_SPEED = 10;   // Start-hastighet ved hopp
+
+// Hopp
+if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
+    this.velY = -JUMP_SPEED;
+    this.jumped = true;
+}
+
+// Reset jumped når hopp-taster slippes
+if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
+
+// Gravity
+this.velY += GRAVITY;
+if (this.velY > MAX_FALL) this.velY = MAX_FALL;
+
+// Flytt horisontalt først
+this.x += dx;
+
+// Vertikal bevegelse og kollisjon
+this.inAir = true; // Anta vi er i luften før sjekk
+this.y += this.velY;
 
 for (const [, tileRect] of world.tileList) {
-  // Horisontal kollisjon
-  if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, tileRect)) {
-    dx = 0;
-  }
-
-  // Vertikal kollisjon
-  if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, tileRect)) {
-    if (this.velY < 0) {
-      // Oppover: stopp ved tak
-      dy = tileRect.y + tileRect.h - this.y;
-    } else {
-      // Nedover: stå på toppen av tile
-      dy = tileRect.y - (this.y + this.h);
-      this.inAir = false;
+    // Horisontal kollisjon allerede håndtert
+    // Vertikal kollisjon
+    if (rectsCollide(this.rect, tileRect)) {
+        if (this.velY > 0) {
+            // Faller ned: stå på toppen av tile
+            this.y = tileRect.y - this.h;
+            this.velY = 0;
+            this.inAir = false;
+        } else if (this.velY < 0) {
+            // Hopp opp: stopp ved tak
+            this.y = tileRect.y + tileRect.h;
+            this.velY = 0;
+        }
     }
-    this.velY = 0; // nullstill vertikal hastighet uansett
-  }
 }
 
 
