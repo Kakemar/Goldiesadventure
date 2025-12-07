@@ -109,87 +109,54 @@ class Player {
   // Rektangelrepresentasjon for kollisjonssjekk
   get rect() { return { x: this.x, y: this.y, w: this.w, h: this.h }; }
 
-  update() {
-    let dx = 0, dy = 0; // Forskyvninger denne oppdateringsrunden
+update() {
+  let dx = 0, dy = 0;
 
-    // Hopp (space, pil opp eller W) — kun hvis spilleren står på bakken og ikke holder hoppeknappen nede
-    if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
-      this.velY = -15; // Gi initial oppadgående fart
-      this.jumped = true; // Markér at hoppeknappen er aktivert
-    }
-    // Når ingen hoppetaster holdes inne, reset 'jumped' slik at spilleren kan hoppe igjen når den treffer bakken
-    if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) {
-      this.jumped = false;
-    }
+  // Horisontal bevegelse
+  if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4;
+  if (keys["ArrowRight"] || keys["KeyD"]) dx += 4;
 
-    // Horisontal bevegelse: A/D eller piltaster
-    if (keys["ArrowLeft"] || keys["KeyA"]) dx -= 4; // Gå/skyv venstre
-    if (keys["ArrowRight"] || keys["KeyD"]) dx += 4; // Gå/skyv høyre
+  // Hopp
+  if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && !this.jumped && !this.inAir) {
+    this.velY = -10;  // Lavere hopp
+    this.jumped = true;
+  }
+  if (!keys["Space"] && !keys["ArrowUp"] && !keys["KeyW"]) this.jumped = false;
 
-// Gravity
-this.velY += 0.25;
-if (this.velY > 3) this.velY = 3;
-this.y += this.velY;
+  // Gravity
+  this.velY += 0.5;                // Tyngdekraft
+  this.velY = Math.min(this.velY, 6); // Maks fallhastighet
+  dy += this.velY;
 
-// Antar vi er i luften
-this.inAir = true;
+  this.inAir = true; // Antar vi er i luften
 
-// Sjekk vertikal kollisjon
-for (const [, tileRect] of world.tileList) {
-  if (rectsCollide(this.rect, tileRect)) {
-    if (this.velY > 0) {
-      // Land på toppen
-      this.y = tileRect.y - this.h;
-      this.velY = 0;
-      this.inAir = false;
-    } else if (this.velY < 0) {
-      // Stopp ved tak
-      this.y = tileRect.y + tileRect.h;
-      this.velY = 0;
+  // Kollisjon med alle tiles i verden
+  for (const [, tileRect] of world.tileList) {
+    // Horisontal kollisjon
+    if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, tileRect)) dx = 0;
+
+    // Vertikal kollisjon
+    if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, tileRect)) {
+      if (this.velY > 0) {
+        // Land på toppen av tile
+        dy = tileRect.y - (this.y + this.h);
+        this.velY = 0;
+        this.inAir = false;
+      } else if (this.velY < 0) {
+        // Stopp ved tak
+        dy = tileRect.y + tileRect.h - this.y;
+        this.velY = 0;
+      }
     }
   }
-}
 
+  // Anvend forskyvninger
+  this.x += dx;
+  this.y += dy;
 
-   // Kollisjon med 'final tiles' (spesielle gjenstander som kan aktiveres senere)
-for (const finalTile of finalTileGroup) {
-  if (!finalTile.visible) continue; // hopp over hvis tile ikke er synlig ennå
-
-  const fRect = finalTile.rect; // hent rektangelet til tile
-
-  // Horisontal kollisjon: hvis vi prøver å flytte oss inn i tile i x-retning
-  if (rectsCollide({ x: this.x + dx, y: this.y, w: this.w, h: this.h }, fRect)) {
-    dx = 0; // stopp horisontal bevegelse
-  }
-
-  // Vertikal kollisjon: hvis vi prøver å flytte oss inn i tile i y-retning
-  if (rectsCollide({ x: this.x, y: this.y + dy, w: this.w, h: this.h }, fRect)) {
-    if (this.velY < 0) {
-      // Oppover: stopp ved tak
-      dy = fRect.y + fRect.h - this.y;
-    } else {
-      // Nedover: stå på toppen av tile
-      dy = fRect.y - (this.y + this.h);
-      this.inAir = false; // vi står nå på bakken
-    }
-    this.velY = 0; // nullstill vertikal hastighet uansett
-  }
-}
-
-
-  // Anvend beregnede forskyvninger (dx, dy) på spillerens posisjon
-this.x += dx; // legg til horisontal forskyvning (flytt til venstre/høyre)
-this.y += dy; // legg til vertikal forskyvning (flytt opp/ned basert på hopp/tyngdekraft)
-
-
-// Begrens spillerens posisjon til et rimelig område
-// clamp sørger for at verdiene aldri går utenfor gitt min/max
-this.x = clamp(this.x, -1000, 5000); 
-// Spilleren kan ikke gå lenger til venstre enn -1000 eller høyere enn 5000 i x-retning
-
-this.y = clamp(this.y, -1000, SCREEN_HEIGHT - this.h); 
-// Spilleren kan ikke falle lenger ned enn skjermhøyden minus egen høyde,
-// og ikke flytte seg høyere opp enn -1000 (gir litt buffer over toppen)
+  // Begrens posisjon
+  this.x = clamp(this.x, -1000, 5000);
+  this.y = clamp(this.y, -1000, SCREEN_HEIGHT - this.h);
 }
 
 // Tegner spilleren med sprite
