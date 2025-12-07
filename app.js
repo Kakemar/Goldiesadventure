@@ -131,9 +131,6 @@ class Player {
     this.velY = Math.min(this.velY, 10); // Begrens maksfart nedover
     dy += this.velY; // Legg til i vertikalforskyvningen
 
- // Påfør tyngdekraft
-this.velY = Math.min(this.velY + 1, 10); // øk og begrens vertikal hastighet
-dy += this.velY; // legg til i forskyvning
 
 // Anta at spilleren er i luften til vi finner en plattform
 this.inAir = true;
