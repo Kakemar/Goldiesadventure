@@ -127,7 +127,7 @@ class Player {
     if (keys["ArrowRight"] || keys["KeyD"]) dx += 4; // Gå/skyv høyre
 
     // Gravity — påfør tyngdekraft
-    this.velY += 1; // Øk vertikal hastighet
+    this.velY += 0.25; // Øk vertikal hastighet
     this.velY = Math.min(this.velY, 10); // Begrens maksfart nedover
     dy += this.velY; // Legg til i vertikalforskyvningen
 
