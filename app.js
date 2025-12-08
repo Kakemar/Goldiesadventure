@@ -1,7 +1,7 @@
 
 
 const SCREEN_WIDTH = 1000; // Bredde på spill-viewport
-const SCREEN_HEIGHT = 1000; // Høyde på spill-viewport
+const SCREEN_HEIGHT = 900; // Høyde på spill-viewport
 const TILE_SIZE = 50; // Størrelse på hver block 
 
 // Hent canvas og 2D-kontekst fra DOM
@@ -12,7 +12,7 @@ const ctx = canvas.getContext("2d");
 const startBtn = document.getElementById("startBtn");
 const themeToggle = document.getElementById("themeToggle");
 
-const GRAVITY = 1;       // tyngdekraft (som i Python: self.vel_y += 1)
+const GRAVITY = 1;       // tyngdekraft i spillet
 const MAX_FALL_SPEED = 10; // maks fallhastighet
 const JUMP_FORCE = -15;  // hoppstyrke
 
@@ -37,7 +37,7 @@ const finalTileGroup = []; // Spesielle tiles som blir synlige etter visse betin
 // Objekt som sporer hvilke taster som er trykket
 const keys = Object.create(null);
 
-// Forhåndslastede bilder/sprites i et objekt for enkel tilgang
+// Bilder som brukes i spillet
 const images = {
   bg: loadImage("bilder/8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg"),
   player: loadImage("bilder/Goldie.png"),
@@ -101,7 +101,7 @@ function randInt(min, max) {
 }
 
 
-// ---------------- Classes ---------------- //
+//classes
 // Player-klassen håndterer spillerens posisjon, fysikk, input og tegning
 class Player {
   constructor(x, y) {
@@ -172,7 +172,7 @@ draw() {
 class Enemy {
   constructor(x, y, img, w = 40, h = 50, speed = 1, counterInc = 1) {
     this.x = x; this.y = y; this.w = w; this.h = h; // Posisjon og størrelse
-    this.img = img; // Bilde/sprite
+    this.img = img; // Bilde
     this.moveDir = speed; // Beginner med en hastighet i x-retning
     this.moveCounter = 0; // Teller som brukes for å snu ved grense
     this.counterInc = counterInc; // Hvor mye counteren øker per oppdatering
@@ -203,7 +203,7 @@ class KingEnemy {
 
     // Enkelt mønster for handlinger (dash, dash, jump)
     this.pattern = ['dash', 'dash', 'jump']; this.patternIndex = 0;
-    this.jumpTimer = 0; this.jumpInterval = randInt(50, 100);
+    this.jumpTimer = 0; this.jumpInterval = randInt(50, 100);  
     this.lastJumpTime = 0; this.jumpCooldown = 100;
 
     // Dash-egenskaper
