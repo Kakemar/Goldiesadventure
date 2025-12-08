@@ -39,20 +39,20 @@ const keys = Object.create(null);
 
 // Bilder som brukes i spillet
 const images = {
-  bg: loadImage("bilder/8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg"),
-  player: loadImage("bilder/Goldie.png"),
-  slime: loadImage("bilder/Slime.png"),
-  fast: loadImage("bilder/Fastslime.png"),
-  yellow: loadImage("bilder/Superfast.png"),
-  king: loadImage("bilder/Kingslime.png"),
-  lava: loadImage("bilder/lava.png"),
-  goldblock: loadImage("bilder/Goldblock.png"),
-  coin: loadImage("bilder/Coin.png"),
-  portal: loadImage("bilder/Portal.png"),
-  chest: loadImage("bilder/Chest.png"),
-  dirt: loadImage("bilder/DirtBlock2D.png"),
-  grass: loadImage("bilder/GrassBlock2D.png"),
-  stone: loadImage("bilder/Sigmastone.png"),
+  bg: loadImage("8bit-pixel-graphic-blue-sky-background-with-clouds-vector.jpg"),
+  player: loadImage("Goldie.png"),
+  slime: loadImage("Slime.png"),
+  fast: loadImage("Fastslime.png"),
+  yellow: loadImage("Superfast.png"),
+  king: loadImage("Kingslime.png"),
+  lava: loadImage("Lava.png"),
+  goldblock: loadImage("Goldblock.png"),
+  coin: loadImage("Coin.png"),
+  portal: loadImage("Portal.png"),
+  chest: loadImage("Chest.png"),
+  dirt: loadImage("DirtBlock2D.png"),
+  grass: loadImage("GrassBlock2D.png"),
+  stone: loadImage("Sigmastone.png"),
 };
 
 // Hjelpefunksjon for å laste bilder. Returnerer et Image-objekt.
