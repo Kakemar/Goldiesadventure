@@ -45,7 +45,7 @@ const images = {
   fast: loadImage("Fastslime.png"),
   yellow: loadImage("Superfast.png"),
   king: loadImage("Kingslime.png"),
-  lava: loadImage("Lava.png"),
+  lava: loadImage("lava.png"),
   goldblock: loadImage("Goldblock.png"),
   coin: loadImage("Coin.png"),
   portal: loadImage("Portal.png"),
